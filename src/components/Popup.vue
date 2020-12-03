@@ -11,11 +11,6 @@
 export default {
     name: 'Popup',
     props: ['handleOpenPost', 'post'],
-    data() {
-        return {
-            isClose: false,
-        }
-    },
     methods: {
         toggle() {
             this.handleOpenPost()
