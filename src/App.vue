@@ -61,6 +61,7 @@ export default {
         },
 
         async getPosts() {
+            this.isOpenPopup = false
             this.isLoading = true
             const endpoint = 'https://graphqlzero.almansi.me/api'
             const query = `query (
@@ -85,7 +86,6 @@ export default {
                 `,
             })
             this.noToShowPost = 5
-            this.isOpenPopup = false
             this.posts = response.data.posts.data
             this.isLoading = false
         },
