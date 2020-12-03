@@ -1,9 +1,9 @@
 <template>
     <div @click="toggle" class="popup-post">
         <span>X</span>
-        <h4>Id:{{ post.id }}</h4>
-        <p>Title:{{ post.title }}</p>
-        <p>Body:{{ post.body }}</p>
+        <h4>Id: {{ post.id }}</h4>
+        <p><strong>Title: </strong>{{ post.title }}</p>
+        <p><strong>Body: </strong>{{ post.body }}</p>
     </div>
 </template>
 

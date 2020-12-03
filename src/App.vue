@@ -4,13 +4,21 @@
         <h1 v-if="isLoading">Loading...</h1>
         <div v-else class="posts">
             <Post
-                v-for="(post, index) in posts.data"
+                v-for="(post, index) in getterOfShowedPosts"
                 :key="index"
                 :post="post"
                 :handleOpenPost="openPost"
                 :getCurrentPost="getCurrentPost"
             />
         </div>
+        <button
+            class="btn"
+            @click="loadMore"
+            v-if="showedPosts.length !== posts.length"
+        >
+            Load more...
+        </button>
+
         <Popup v-if="isOpenPopup" :handleOpenPost="openPost" :post="post" />
     </div>
 </template>
@@ -18,6 +26,7 @@
 <script>
 import Post from '@/components/Post'
 import Popup from '@/components/Popup'
+import ApolloClient, { gql } from 'apollo-boost'
 
 export default {
     name: 'App',
@@ -25,6 +34,8 @@ export default {
         return {
             isLoading: false,
             posts: [],
+            showedPosts: [],
+            noToShowPost: 5,
             post: {},
             isOpenPopup: false,
         }
@@ -33,15 +44,24 @@ export default {
         Post,
         Popup,
     },
+    computed: {
+        getterOfShowedPosts() {
+            return this.posts.filter((post) => post.id <= this.noToShowPost)
+        },
+    },
     methods: {
         openPost() {
             this.isOpenPopup = !this.isOpenPopup
+        },
+        loadMore() {
+            this.noToShowPost += 5
         },
         getCurrentPost(post) {
             this.post = post
         },
 
         async getPosts() {
+            this.isLoading = true
             const endpoint = 'https://graphqlzero.almansi.me/api'
             const query = `query (
               $options: PageQueryOptions
@@ -56,16 +76,17 @@ export default {
                 }
               }
             }`
-            this.isLoading = true
-            const response = await fetch(endpoint, {
-                method: 'POST',
-                headers: { 'content-type': 'application/json' },
-                body: JSON.stringify({
-                    query,
-                }),
+            const client = new ApolloClient({
+                uri: endpoint,
             })
-            const data = await response.json()
-            this.posts = data.data.posts
+            const response = await client.query({
+                query: gql`
+                    ${query}
+                `,
+            })
+            this.noToShowPost = 5
+            this.isOpenPopup = false
+            this.posts = response.data.posts.data
             this.isLoading = false
         },
     },
@@ -86,6 +107,8 @@ export default {
     border: 0;
     box-shadow: 2px 2px 10px #000;
     cursor: pointer;
+    margin: 0 auto;
+    display: block;
 }
 
 .posts {

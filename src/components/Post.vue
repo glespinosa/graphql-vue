@@ -1,11 +1,12 @@
 <template>
     <div @click="getSinglePost(post.id)" class="post">
         <h4>Id:{{ post.id }}</h4>
-        <p>Title:{{ post.title }}</p>
+        <p><strong>Title:</strong>{{ post.title }}</p>
     </div>
 </template>
 
 <script>
+import ApolloClient, { gql } from 'apollo-boost'
 export default {
     name: 'Post',
     props: ['post', 'handleOpenPost', 'getCurrentPost'],
@@ -19,15 +20,16 @@ export default {
                             body
                         }
                     }`
-            const response = await fetch(endpoint, {
-                method: 'POST',
-                headers: { 'content-type': 'application/json' },
-                body: JSON.stringify({
-                    query,
-                }),
+            const client = new ApolloClient({
+                uri: endpoint,
             })
-            const data = await response.json()
-            const post = data.data.post
+            const response = await client.query({
+                query: gql`
+                    ${query}
+                `,
+            })
+
+            const post = response.data.post
             this.handleOpenPost()
             this.getCurrentPost(post)
         },
