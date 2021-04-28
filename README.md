@@ -1,6 +1,6 @@
 # graphql-vue
 
-development
+development changeReadmeFeature
 
 ## Project setup
 
