@@ -1,5 +1,7 @@
 # graphql-vue
 
+development
+
 ## Project setup
 
 ```
